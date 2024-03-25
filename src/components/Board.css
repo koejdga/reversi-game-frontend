@@ -1,0 +1,73 @@
+.board-frame {
+  background-color: lightblue;
+  padding: 1.5rem;
+}
+
+.board {
+  background-color: lightgreen;
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.cell {
+  width: var(--cell-size);
+  aspect-ratio: 1;
+  border: 1px solid black;
+}
+
+.clickable {
+  width: var(--cell-size);
+  aspect-ratio: 1;
+  position: absolute;
+  cursor: pointer;
+}
+
+.clickable:hover {
+  background-color: var(--move-clr);
+  border: 1px solid black;
+}
+
+.circle {
+  width: calc(var(--cell-size) - 2px);
+  margin-top: 1px;
+  margin-left: 1px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.white {
+  background-color: lightyellow;
+}
+
+.black {
+  background-color: darkslategrey;
+}
+
+.potential-hole {
+  cursor: pointer;
+}
+
+.potential-hole:hover {
+  background-color: var(--potential-hole-clr);
+}
+
+.hole-creating-mode {
+  cursor: pointer;
+}
+
+.hole {
+  background-color: var(--hole-clr);
+}
+
+.possible-move {
+  --margin-coef: (1 - var(--possible-move-size-coef)) / 2;
+  width: calc(var(--cell-size) * var(--possible-move-size-coef));
+  margin-top: calc(var(--cell-size) * var(--margin-coef));
+  margin-left: calc(var(--cell-size) * var(--margin-coef));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: absolute;
+  background-color: var(--move-clr);
+}
