@@ -3,15 +3,19 @@ import "./Preparation.css";
 import { defaultWidth, defaultHeight, GameMode, Player } from "../common";
 import Board from "./Board";
 import { createCoordsString } from "../utils";
+import { getStartingPositions } from "../service";
 
 export default function Preparation(props) {
   const [width, setWidth] = useState(defaultWidth);
   const [height, setHeight] = useState(defaultHeight);
   const [holes, setHoles] = useState([]);
+  const [whiteCircles, setWhiteCircles] = useState([]);
+  const [blackCircles, setBlackCircles] = useState([]);
   const [amountOfHoles, setAmountOfHoles] = useState(1);
 
   const [firstPlayer, setFirstPlayer] = useState(Player.USER);
   const [secondPlayer, setSecondPlayer] = useState(Player.BOT);
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleFirstPlayerChange = (event) => {
     setFirstPlayer(event.target.value === "user" ? Player.USER : Player.BOT);
@@ -53,6 +57,28 @@ export default function Preparation(props) {
 
   const addHole = (cellId) => {
     setHoles((prevHoles) => [...prevHoles, cellId]);
+  };
+
+  const start = async () => {
+    setShowAlert(false);
+    const result = await getStartingPositions(width, height, holes);
+
+    if (result === undefined) {
+      setShowAlert(true);
+      return;
+    }
+
+    // setPossibleMoves(result.possibleMoves);
+    // setChanges(result.changes);
+    props.startGame(
+      width,
+      height,
+      result.blackDots,
+      result.whiteDots,
+      holes,
+      firstPlayer,
+      secondPlayer
+    );
   };
 
   return (
@@ -161,15 +187,17 @@ export default function Preparation(props) {
           />
         </section>
 
-        <button
-          type="button"
-          id="start-button"
-          onClick={() =>
-            props.startGame(width, height, holes, firstPlayer, secondPlayer)
-          }
-        >
-          Розпочати
-        </button>
+        <section className="start-button">
+          {showAlert && (
+            <p id="alert">
+              Не можливо створити гру з такими налаштуваннями, змініть розмір
+              дошки або діри
+            </p>
+          )}
+          <button type="button" id="start-button" onClick={start}>
+            Розпочати
+          </button>
+        </section>
       </form>
 
       <script src="common.js"></script>

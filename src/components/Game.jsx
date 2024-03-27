@@ -1,10 +1,16 @@
-import { GameMode, Player, Winner, WinnerForApi } from "../common";
+import {
+  GameMode,
+  Player,
+  Winner,
+  WinnerForApi,
+  defaultBlackDots,
+  defaultWhiteDots,
+} from "../common";
 import Board from "./Board";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   getBotMove,
   getPossibleMoves,
-  getStartingPositions,
   getWhoWon,
   gatherStatistics,
 } from "../service";
@@ -12,8 +18,13 @@ import "./Game.css";
 import { getPlayerNames } from "../utils";
 
 export default function Game(props) {
-  const [whiteCircles, setWhiteCircles] = useState([]);
-  const [blackCircles, setBlackCircles] = useState([]);
+  const [whiteCircles, setWhiteCircles] = useState(
+    props.whiteDots || defaultWhiteDots
+  );
+  const [blackCircles, setBlackCircles] = useState(
+    props.blackDots || defaultBlackDots
+  );
+  const [holes, setHoles] = useState(props.blackDots || []);
   const [possibleMoves, setPossibleMoves] = useState(null);
 
   const [isWhiteTurn, setIsWhiteTurn] = useState(false);
@@ -36,16 +47,32 @@ export default function Game(props) {
   );
 
   useEffect(() => {
-    const getPositions = async () => {
-      const result = await getStartingPositions(props.width, props.height);
-      setBlackCircles(result.blackDots);
-      setWhiteCircles(result.whiteDots);
-      setPossibleMoves(result.possibleMoves);
-      setChanges(result.changes);
+    const firstPossibleMoves = async () => {
+      if (state === Player.USER) {
+        const result = await getPossibleMoves(
+          blackCircles,
+          whiteCircles,
+          props.width,
+          props.height
+        );
+
+        setPossibleMoves(result.possibleMoves);
+        setChanges(result.changes);
+      } else {
+        const result = await getBotMove(
+          blackCircles,
+          whiteCircles,
+          props.width,
+          props.height
+        );
+
+        setBotMove(result.botMove);
+        setPossibleMoves(result.possibleMoves);
+        setChanges(result.changes);
+      }
     };
-    getPositions();
-    console.log("get positions");
-  }, [props.height, props.width]);
+    firstPossibleMoves();
+  }, []);
 
   const userPlayed = async (userMoveCoords) => {
     if (possibleMoves.includes(userMoveCoords)) {
@@ -68,7 +95,6 @@ export default function Game(props) {
   };
 
   const changeDots = async (moveCoords, changes) => {
-    console.log("changeDots");
     setThinking(true);
     setShowAlert(false);
 
@@ -128,6 +154,8 @@ export default function Game(props) {
           setWinner(!isWhiteTurn ? Winner.BLACK : Winner.WHITE);
           break;
         case WinnerForApi.TIE:
+          console.log("set tie in changeDots");
+
           setWinner(Winner.TIE);
           break;
         default:
@@ -149,6 +177,7 @@ export default function Game(props) {
     const winner = await getWhoWon(blackCircles, whiteCircles);
 
     if (winner === "tie") {
+      console.log("set tie in endGame");
       setWinner(Winner.TIE);
     } else if (winner === "this") {
       setWinner(Winner.BLACK);
@@ -157,38 +186,30 @@ export default function Game(props) {
     }
 
     if (gatherStats) {
-      gatherStatistics();
+      gatherStatistics(props.width, props.height);
     }
 
     console.log("END GAME ENDED");
   };
 
-  const [counter1, setCounter1] = useState(0);
-  const [counter2, setCounter2] = useState(0);
-
   useEffect(() => {
     // not the end of the game, but we need to pass turn to another player
-    if (possibleMoves && possibleMoves.length === 0 && !thinking) {
+    if (
+      possibleMoves &&
+      possibleMoves.length === 0 &&
+      !thinking &&
+      playersWithoutMoves < 2
+    ) {
       setPlayersWithoutMoves(playersWithoutMoves + 1);
       setNoMoves(true);
     }
-    if (counter1 < 50) {
-      console.log("use effect1 " + counter1);
-      setCounter1(counter1 + 1);
-    }
-  }, [possibleMoves, thinking, playersWithoutMoves, counter1]);
+  }, [possibleMoves, thinking, playersWithoutMoves]);
 
-  // const endGameRef = useRef(endGame);
   useEffect(() => {
     if (playersWithoutMoves === 2) {
       endGame();
-      // endGameRef.current();
     }
-    if (counter2 < 50) {
-      console.log("use effect2 " + counter2);
-      setCounter2(counter2 + 1);
-    }
-  }, [playersWithoutMoves, counter2]);
+  }, [playersWithoutMoves]);
 
   return (
     <div className="container">

@@ -11,14 +11,26 @@ function App() {
   const [holes, setHoles] = useState([]);
   const [firstPlayer, setFirstPlayer] = useState(Player.USER);
   const [secondPlayer, setSecondPlayer] = useState(Player.BOT);
+  const [blackDots, setBlackDots] = useState(null);
+  const [whiteDots, setWhiteDots] = useState(null);
 
-  const startGame = (width, height, holes, firstPlayer, secondPlayer) => {
+  const startGame = (
+    width,
+    height,
+    blackDots,
+    whiteDots,
+    holes,
+    firstPlayer,
+    secondPlayer
+  ) => {
     setWidth(width);
     setHeight(height);
     setHoles(holes);
     setGameMode(GameMode.PLAYING);
     setFirstPlayer(firstPlayer);
     setSecondPlayer(secondPlayer);
+    setBlackDots(blackDots);
+    setWhiteDots(whiteDots);
   };
 
   const restart = () => {
@@ -36,6 +48,8 @@ function App() {
           firstPlayer={firstPlayer}
           secondPlayer={secondPlayer}
           restart={restart}
+          blackDots={blackDots}
+          whiteDots={whiteDots}
         />
       )}
     </div>

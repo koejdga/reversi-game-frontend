@@ -8,7 +8,7 @@ import axios from "axios";
 
 const serverLink = process.env.REACT_APP_GAME_LOGIC_SERVER;
 
-const times_for_requests = [];
+const timesForRequests = [];
 
 export const getPossibleMoves = async (myDots, anotherDots, width, height) => {
   const startTime = performance.now();
@@ -50,7 +50,7 @@ export const getPossibleMoves = async (myDots, anotherDots, width, height) => {
     const executionTime = endTime - startTime;
     // console.log("getPossibleMoves");
     // console.log(`Execution time: ${executionTime} milliseconds`);
-    times_for_requests.push({ getPossibleMoves: executionTime });
+    timesForRequests.push({ getPossibleMoves: executionTime });
 
     return { possibleMoves: possibleMoves, changes: changes };
   } catch (error) {
@@ -59,7 +59,6 @@ export const getPossibleMoves = async (myDots, anotherDots, width, height) => {
 };
 
 export const getBotMove = async (botDots, anotherDots, width, height) => {
-  console.log("get bot move very start");
   const startTime = performance.now();
 
   try {
@@ -70,12 +69,7 @@ export const getBotMove = async (botDots, anotherDots, width, height) => {
       height: height,
     };
 
-    console.log(requestBody);
-
     const response = await axios.post(serverLink + "/bot_move", requestBody);
-
-    console.log("get bot move");
-    console.log(response.data.answer);
 
     if (response.data.answer === "false") {
       return;
@@ -93,9 +87,14 @@ export const getBotMove = async (botDots, anotherDots, width, height) => {
     const executionTime = endTime - startTime;
     // console.log("getBotMove");
     // console.log(`Execution time: ${executionTime} milliseconds`);
-    times_for_requests.push({ getBotMove: executionTime });
+    timesForRequests.push({ getBotMove: executionTime });
 
-    return { botMove: botMove, changes: changes, possibleMoves: possibleMoves };
+    return {
+      botMove: botMove,
+      changes: changes,
+      possibleMoves: possibleMoves,
+      winner: response.data.winner,
+    };
   } catch (error) {
     console.log("error bot move");
     console.log(error);
@@ -103,15 +102,20 @@ export const getBotMove = async (botDots, anotherDots, width, height) => {
   console.log("end bot move");
 };
 
-export const getStartingPositions = async (width, height) => {
+export const getStartingPositions = async (width, height, holes) => {
   const startTime = performance.now();
 
   try {
-    const requestBody = { width: width, height: height };
+    const requestBody = {
+      width: width,
+      height: height,
+      holes: convertCoordListToSend(holes),
+    };
     const response = await axios.post(
       serverLink + "/starting_positions",
       requestBody
     );
+
     if (response.data.answer === "false") {
       return;
     }
@@ -125,12 +129,13 @@ export const getStartingPositions = async (width, height) => {
       changes: response.data.answer.possibleMoves.map((move) =>
         convertChangesToCoords(move)
       ),
+      winner: response.data.winner,
     };
     const endTime = performance.now();
     const executionTime = endTime - startTime;
     // console.log("getStartingPositions");
     // console.log(`Execution time: ${executionTime} milliseconds`);
-    times_for_requests.push({ getStartingPositions: executionTime });
+    timesForRequests.push({ getStartingPositions: executionTime });
 
     return result;
   } catch (error) {
@@ -160,7 +165,7 @@ export const getWhoWon = async (myDots, anotherDots) => {
     const executionTime = endTime - startTime;
     // console.log("getWhoWon");
     // console.log(`Execution time: ${executionTime} milliseconds`);
-    times_for_requests.push({ getWhoWon: executionTime });
+    timesForRequests.push({ getWhoWon: executionTime });
 
     return result;
   } catch (error) {
@@ -168,15 +173,14 @@ export const getWhoWon = async (myDots, anotherDots) => {
   }
 };
 
-export const gatherStatistics = () => {
+export const gatherStatistics = (width, height) => {
   console.log("gather_statistics");
-  console.log(times_for_requests);
-  const objList = [{ value1: 10, value2: 20 }, { value1: 30 }, { value3: 40 }];
+  console.log(timesForRequests);
 
-  calculateAverageAndWriteJSON(objList, "output.json");
+  calculateAverageAndWriteJSON(timesForRequests, width, height, "output.json");
 };
 
-function calculateAverageAndWriteJSON(objList, filename) {
+function calculateAverageAndWriteJSON(objList, width, height, filename) {
   let total = 0;
   let count = 0;
 
@@ -197,6 +201,8 @@ function calculateAverageAndWriteJSON(objList, filename) {
   const data = {
     average: average,
     list: objList,
+    width: width,
+    height: height,
   };
 
   const jsonString = JSON.stringify(data, null, 2);

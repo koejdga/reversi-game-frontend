@@ -39,3 +39,7 @@ select {
   font-size: var(--font-size);
   width: 6rem;
 }
+
+#alert {
+  color: red;
+}

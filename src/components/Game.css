@@ -36,10 +36,6 @@
   padding-inline: 2rem;
 }
 
-#alert {
-  color: red;
-}
-
 .new-game-button {
   position: absolute;
   left: -40%;

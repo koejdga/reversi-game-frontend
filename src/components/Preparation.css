@@ -118,10 +118,18 @@ button:active {
   grid-row: 2 / span 1;
 }
 
-#start-button {
-  background-color: rgb(188, 188, 188);
+.start-button {
   grid-column: 2 / span 1;
   grid-row: 3 / span 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 15rem;
+}
+
+#start-button {
+  background-color: rgb(188, 188, 188);
+  width: 8rem;
 }
 
 #clear-button {

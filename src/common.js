@@ -1,6 +1,8 @@
 export const defaultWidth = 4;
 export const defaultHeight = 4; // TODO: change to 8
 export const cellSize = 40;
+export const defaultWhiteDots = ["w1h1", "w2h2"];
+export const defaultBlackDots = ["w2h1", "w1h2"];
 
 export let width = localStorage.getItem("width") || defaultWidth;
 export let height = localStorage.getItem("height") || defaultHeight;
