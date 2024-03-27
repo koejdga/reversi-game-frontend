@@ -110,12 +110,14 @@ export default function Board(props) {
             createCircle(blackCircle, "black", false)
           )}
         {props.highlightPossibleMoves &&
+          props.possibleMoves &&
           props.possibleMoves.map((possibleMove) =>
             createCircle(possibleMove, "", true)
           )}
 
         {props.userTurn &&
           props.gameMode === GameMode.PLAYING &&
+          props.possibleMoves &&
           props.possibleMoves.map((possibleMove) => {
             const widthHeight = getWidthHeightFromCoords(possibleMove);
             if (widthHeight == null) {

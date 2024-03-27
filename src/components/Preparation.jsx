@@ -57,67 +57,100 @@ export default function Preparation(props) {
 
   return (
     <div className="main">
-      <h1>Reversi Game</h1>
-      <form className="board-size-form">
-        <h6>Розмір поля</h6>
-        <div className="input-unit">
-          <p>Ширина</p>
-          <input
-            name="width"
-            id="width"
-            defaultValue="8"
-            placeholder="8"
-            onChange={(event) => {
-              const newValue = parseInt(event.target.value);
-              if (!isNaN(newValue)) setWidth(newValue);
-              else setWidth(defaultWidth);
-            }}
-          />
-        </div>
-        <div className="input-unit">
-          <p>Висота</p>
-          <input
-            name="height"
-            id="height"
-            defaultValue="8"
-            placeholder="8"
-            onChange={(event) => {
-              const newValue = parseInt(event.target.value);
-              if (!isNaN(newValue)) setHeight(newValue);
-              else setHeight(defaultHeight);
-            }}
-          />
-        </div>
-        <div className="board-and-side-parts">
-          <section className="side-part select-players">
-            <h6>Хто грає</h6>
-            <div>
-              <label htmlFor="player1-select">Першим грає:</label>
-              <select
-                value={firstPlayer === Player.USER ? "user" : "bot"}
-                onChange={handleFirstPlayerChange}
-                name="player1"
-                id="player1-select"
-              >
-                <option value="user">User</option>
-                <option value="bot">Bot</option>
-              </select>
-            </div>
+      <form className="config-board-grid">
+        <section className="select-field-size">
+          <h1>Reversi Game</h1>
 
-            <div>
-              <label htmlFor="player2-select">Другим грає:</label>
-              <select
-                value={secondPlayer === Player.USER ? "user" : "bot"}
-                onChange={handleSecondPlayerChange}
-                name="player2"
-                id="player2-select"
-              >
-                <option value="user">User</option>
-                <option value="bot">Bot</option>
-              </select>
-            </div>
-          </section>
+          <h6>Розмір поля</h6>
+          <div className="input-unit">
+            <p>Ширина</p>
+            <input
+              name="width"
+              id="width"
+              defaultValue={defaultWidth}
+              placeholder={defaultWidth}
+              onChange={(event) => {
+                const newValue = parseInt(event.target.value);
+                if (!isNaN(newValue)) setWidth(newValue);
+                else setWidth(defaultWidth);
+              }}
+            />
+          </div>
+          <div className="input-unit">
+            <p>Висота</p>
+            <input
+              name="height"
+              id="height"
+              defaultValue={defaultHeight}
+              placeholder={defaultHeight}
+              onChange={(event) => {
+                const newValue = parseInt(event.target.value);
+                if (!isNaN(newValue)) setHeight(newValue);
+                else setHeight(defaultHeight);
+              }}
+            />
+          </div>
+        </section>
 
+        <section className="side-part select-players">
+          <h6>Хто грає</h6>
+          <div>
+            <label htmlFor="player1-select">Першим грає:</label>
+            <select
+              value={firstPlayer === Player.USER ? "user" : "bot"}
+              onChange={handleFirstPlayerChange}
+              name="player1"
+              id="player1-select"
+            >
+              <option value="user">User</option>
+              <option value="bot">Bot</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="player2-select">Другим грає:</label>
+            <select
+              value={secondPlayer === Player.USER ? "user" : "bot"}
+              onChange={handleSecondPlayerChange}
+              name="player2"
+              id="player2-select"
+            >
+              <option value="user">User</option>
+              <option value="bot">Bot</option>
+            </select>
+          </div>
+        </section>
+
+        <section className="side-part choose-holes-menu">
+          <h6>Оберіть чорні діри</h6>
+          <div className="random-generation">
+            <button
+              id="generate-random"
+              type="button"
+              onClick={() => generateRandomHoles()}
+            >
+              Згенерувати випадково
+            </button>
+            <div id="choose-holes-amount">
+              <p>Кількість:</p>
+              <input
+                name="amount-of-holes"
+                id="amount-of-holes"
+                value={amountOfHoles}
+                onChange={(event) => {
+                  const newValue = parseInt(event.target.value);
+                  if (!isNaN(newValue)) setAmountOfHoles(newValue);
+                  else setAmountOfHoles(0);
+                }}
+              />
+            </div>
+          </div>
+          <button type="button" id="clear-button" onClick={() => setHoles([])}>
+            Очистити
+          </button>
+        </section>
+
+        <section className="board">
           <Board
             width={width}
             height={height}
@@ -126,40 +159,7 @@ export default function Preparation(props) {
             addHole={addHole}
             gameMode={GameMode.CREATING}
           />
-
-          <section className="side-part choose-holes-menu">
-            <h6>Оберіть чорні діри</h6>
-            <div className="random-generation">
-              <button
-                id="generate-random"
-                type="button"
-                onClick={() => generateRandomHoles()}
-              >
-                Згенерувати випадково
-              </button>
-              <div id="choose-holes-amount">
-                <p>Кількість:</p>
-                <input
-                  name="amount-of-holes"
-                  id="amount-of-holes"
-                  value={amountOfHoles}
-                  onChange={(event) => {
-                    const newValue = parseInt(event.target.value);
-                    if (!isNaN(newValue)) setAmountOfHoles(newValue);
-                    else setAmountOfHoles(0);
-                  }}
-                />
-              </div>
-            </div>
-            <button
-              type="button"
-              id="clear-button"
-              onClick={() => setHoles([])}
-            >
-              Очистити
-            </button>
-          </section>
-        </div>
+        </section>
 
         <button
           type="button"

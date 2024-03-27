@@ -41,14 +41,6 @@ button:active {
   border: 1px solid gray;
 }
 
-#start-button {
-  background-color: rgb(188, 188, 188);
-}
-
-#clear-button {
-  background-color: #ffe0e0;
-}
-
 .input-unit {
   display: grid;
   grid-template-columns: 5rem 5rem;
@@ -77,31 +69,63 @@ button:active {
   justify-content: center;
 }
 
-.board-and-side-parts {
-  position: relative;
+.config-board-grid {
+  display: grid;
+  grid-template-rows: auto, auto, auto;
+  grid-template-columns: auto, auto, auto;
+  align-items: center;
+  text-align: center;
+  justify-items: center;
+  gap: 2rem;
+}
+
+.config-board-grid > * {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+}
+
+.select-field-size {
+  grid-column: 2 / span 1;
+  grid-row: 1 / span 1;
 }
 
 .side-part {
-  position: absolute;
-  top: 0;
   padding: 3rem 2rem;
-  gap: 1.5rem;
-  width: 100%;
 }
 
 .choose-holes-menu {
+  grid-column: 3 / span 1;
+  grid-row: 2 / span 1;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  left: 100%;
 }
 
 .select-players {
+  grid-column: 1 / span 1;
+  grid-row: 2 / span 1;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  left: -100%;
+}
+
+.board {
+  grid-column: 2 / span 1;
+  grid-row: 2 / span 1;
+}
+
+#start-button {
+  background-color: rgb(188, 188, 188);
+  grid-column: 2 / span 1;
+  grid-row: 3 / span 1;
+}
+
+#clear-button {
+  background-color: #ffe0e0;
 }
 
 .select-players > * {

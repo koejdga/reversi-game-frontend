@@ -20,6 +20,7 @@ export const getPossibleMoves = async (myDots, anotherDots, width, height) => {
       width: width,
       height: height,
     };
+
     const response = await axios.post(
       serverLink + "/possible_moves",
       requestBody
@@ -38,9 +39,6 @@ export const getPossibleMoves = async (myDots, anotherDots, width, height) => {
         const winner = response.data.answer.win;
         console.log("winner: " + winner);
         return { winner: winner };
-      } else {
-        console.log("no winner");
-        // return signal to send request for another player
       }
     }
 
@@ -61,6 +59,7 @@ export const getPossibleMoves = async (myDots, anotherDots, width, height) => {
 };
 
 export const getBotMove = async (botDots, anotherDots, width, height) => {
+  console.log("get bot move very start");
   const startTime = performance.now();
 
   try {
@@ -71,7 +70,12 @@ export const getBotMove = async (botDots, anotherDots, width, height) => {
       height: height,
     };
 
+    console.log(requestBody);
+
     const response = await axios.post(serverLink + "/bot_move", requestBody);
+
+    console.log("get bot move");
+    console.log(response.data.answer);
 
     if (response.data.answer === "false") {
       return;
@@ -93,8 +97,10 @@ export const getBotMove = async (botDots, anotherDots, width, height) => {
 
     return { botMove: botMove, changes: changes, possibleMoves: possibleMoves };
   } catch (error) {
+    console.log("error bot move");
     console.log(error);
   }
+  console.log("end bot move");
 };
 
 export const getStartingPositions = async (width, height) => {

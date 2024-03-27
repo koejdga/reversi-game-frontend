@@ -1,6 +1,6 @@
 import { GameMode, Player, Winner, WinnerForApi } from "../common";
 import Board from "./Board";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   getBotMove,
   getPossibleMoves,
@@ -14,7 +14,7 @@ import { getPlayerNames } from "../utils";
 export default function Game(props) {
   const [whiteCircles, setWhiteCircles] = useState([]);
   const [blackCircles, setBlackCircles] = useState([]);
-  const [possibleMoves, setPossibleMoves] = useState([]);
+  const [possibleMoves, setPossibleMoves] = useState(null);
 
   const [isWhiteTurn, setIsWhiteTurn] = useState(false);
   const [isFirstPlayerTurn, setIsFirstPlayerTurn] = useState(true);
@@ -44,6 +44,7 @@ export default function Game(props) {
       setChanges(result.changes);
     };
     getPositions();
+    console.log("get positions");
   }, [props.height, props.width]);
 
   const userPlayed = async (userMoveCoords) => {
@@ -56,27 +57,25 @@ export default function Game(props) {
   };
 
   const gameFlow = async () => {
-    if (state === Player.BOT) {
-      changeDots(botMove, changes);
-    } else if (noMoves) {
+    if (noMoves) {
       setNoMoves(false);
       changeDots(null, null);
+    } else if (state === Player.BOT) {
+      changeDots(botMove, changes);
     } else {
       setShowAlert(true);
     }
   };
 
   const changeDots = async (moveCoords, changes) => {
+    console.log("changeDots");
     setThinking(true);
     setShowAlert(false);
 
     let white = whiteCircles;
     let black = blackCircles;
+
     if (moveCoords === null && changes === null) {
-      console.log("change dots pass turn");
-      console.log("isWhiteTurn");
-      console.log(isWhiteTurn);
-      return;
     } else {
       // update white and black circles after the move
       if (isWhiteTurn) {
@@ -102,8 +101,9 @@ export default function Game(props) {
         props.width,
         props.height
       );
-      moves = result.possibleMoves;
+
       setBotMove(result.botMove);
+      moves = result.possibleMoves;
       setChanges(result.changes);
     } else {
       result = await getPossibleMoves(
@@ -113,27 +113,28 @@ export default function Game(props) {
         props.height
       );
 
-      if (result.winner !== undefined) {
-        switch (result.winner) {
-          case WinnerForApi.THIS:
-            setWinner(!isWhiteTurn ? Winner.WHITE : Winner.BLACK);
-            break;
-          case WinnerForApi.NOT_THIS:
-            setWinner(!isWhiteTurn ? Winner.BLACK : Winner.WHITE);
-            break;
-          case WinnerForApi.TIE:
-            setWinner(Winner.TIE);
-            break;
-          default:
-            break;
-        }
-        setThinking(false);
-        return;
-      }
-
+      setBotMove(null);
       moves = result.possibleMoves;
       setChanges(result.changes);
-      setBotMove(null);
+    }
+
+    if (result.winner !== undefined) {
+      console.log("looking for winner");
+      switch (result.winner) {
+        case WinnerForApi.THIS:
+          setWinner(!isWhiteTurn ? Winner.WHITE : Winner.BLACK);
+          break;
+        case WinnerForApi.NOT_THIS:
+          setWinner(!isWhiteTurn ? Winner.BLACK : Winner.WHITE);
+          break;
+        case WinnerForApi.TIE:
+          setWinner(Winner.TIE);
+          break;
+        default:
+          break;
+      }
+      setThinking(false);
+      return;
     }
 
     setIsWhiteTurn(!isWhiteTurn);
@@ -144,26 +145,8 @@ export default function Game(props) {
     setThinking(false);
   };
 
-  useEffect(() => {
-    // not the end of the game, but we need to pass turn to another player
-    if (possibleMoves.length === 0 && !thinking) {
-      setPlayersWithoutMoves(playersWithoutMoves + 1);
-      setNoMoves(true);
-      // setTimeout(() => changeDots(null, null), 3000);
-    }
-  }, [possibleMoves, thinking]);
-
-  useEffect(() => {
-    if (playersWithoutMoves === 2) {
-      console.log("both players are without moves");
-    } else {
-      console.log("playersWithoutMoves = " + playersWithoutMoves);
-    }
-  }, [playersWithoutMoves]);
-
   const endGame = async () => {
     const winner = await getWhoWon(blackCircles, whiteCircles);
-    console.log("End game");
 
     if (winner === "tie") {
       setWinner(Winner.TIE);
@@ -173,11 +156,39 @@ export default function Game(props) {
       setWinner(Winner.WHITE);
     }
 
-    console.log(gatherStats);
     if (gatherStats) {
       gatherStatistics();
     }
+
+    console.log("END GAME ENDED");
   };
+
+  const [counter1, setCounter1] = useState(0);
+  const [counter2, setCounter2] = useState(0);
+
+  useEffect(() => {
+    // not the end of the game, but we need to pass turn to another player
+    if (possibleMoves && possibleMoves.length === 0 && !thinking) {
+      setPlayersWithoutMoves(playersWithoutMoves + 1);
+      setNoMoves(true);
+    }
+    if (counter1 < 50) {
+      console.log("use effect1 " + counter1);
+      setCounter1(counter1 + 1);
+    }
+  }, [possibleMoves, thinking, playersWithoutMoves, counter1]);
+
+  // const endGameRef = useRef(endGame);
+  useEffect(() => {
+    if (playersWithoutMoves === 2) {
+      endGame();
+      // endGameRef.current();
+    }
+    if (counter2 < 50) {
+      console.log("use effect2 " + counter2);
+      setCounter2(counter2 + 1);
+    }
+  }, [playersWithoutMoves, counter2]);
 
   return (
     <div className="container">
@@ -215,9 +226,10 @@ export default function Game(props) {
           </h3>
         )}
 
-        {possibleMoves.length === 0 && !thinking && !winner && (
-          <h4>Немає доступних ходів</h4>
-        )}
+        {possibleMoves &&
+          possibleMoves.length === 0 &&
+          !thinking &&
+          !winner && <h4>Немає доступних ходів</h4>}
 
         <Board
           width={props.width}
@@ -248,7 +260,7 @@ export default function Game(props) {
             type="button"
             id="next-button"
             onClick={gameFlow}
-            disabled={winner}
+            disabled={winner || thinking}
           >
             Далі
           </button>
