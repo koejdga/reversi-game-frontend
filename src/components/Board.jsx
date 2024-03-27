@@ -39,11 +39,27 @@ export default function Board(props) {
 
   return (
     <div className="board-frame">
+      <div className="numbers">
+        {[...Array(props.width).keys()].map((i) => (
+          <div key={i} className="coord">
+            {i}
+          </div>
+        ))}
+      </div>
+
+      <div className="letters">
+        {[...Array(props.height).keys()].map((i) => (
+          <div key={i} className="coord">
+            {String.fromCharCode(97 + i)}
+          </div>
+        ))}
+      </div>
+
       <div
         className="board"
         style={{
           width: cellSize * props.width + "px",
-          height: cellSize * props.width + "px",
+          height: cellSize * props.height + "px",
         }}
       >
         {props.gameMode === GameMode.CREATING &&
@@ -72,7 +88,8 @@ export default function Board(props) {
               })}
             </div>
           ))}
-        {props.gameMode === GameMode.PLAYING &&
+        {(props.gameMode === GameMode.PLAYING ||
+          props.gameMode === GameMode.ENDED) &&
           [...Array(props.width).keys()].map((i) => (
             <div key={i}>
               {[...Array(props.height).keys()].map((j) => {
@@ -98,6 +115,7 @@ export default function Board(props) {
           )}
 
         {props.userTurn &&
+          props.gameMode === GameMode.PLAYING &&
           props.possibleMoves.map((possibleMove) => {
             const widthHeight = getWidthHeightFromCoords(possibleMove);
             if (widthHeight == null) {
@@ -121,6 +139,22 @@ export default function Board(props) {
               ></div>
             );
           })}
+      </div>
+
+      <div className="numbers-two">
+        {[...Array(props.width).keys()].map((i) => (
+          <div key={i} className="coord">
+            {i}
+          </div>
+        ))}
+      </div>
+
+      <div className="letters-two">
+        {[...Array(props.height).keys()].map((i) => (
+          <div key={i} className="coord">
+            {String.fromCharCode(97 + i)}
+          </div>
+        ))}
       </div>
     </div>
   );

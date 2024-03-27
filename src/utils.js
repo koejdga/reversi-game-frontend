@@ -35,7 +35,9 @@ export const convertDotToCoords = (dotObj) => {
 
 export const convertChangesToCoords = (changesObj) => {
   if (changesObj.changes === undefined) {
-    console.log("ERROR: invalid object provided to create a dot");
+    console.log(
+      "ERROR: invalid object provided to return changes (array of dots)"
+    );
     return;
   }
   return convertDotsToCoordsList(changesObj.changes);
