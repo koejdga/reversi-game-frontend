@@ -10,7 +10,13 @@ const serverLink = process.env.REACT_APP_GAME_LOGIC_SERVER;
 
 const timesForRequests = [];
 
-export const getPossibleMoves = async (myDots, anotherDots, width, height) => {
+export const getPossibleMoves = async (
+  myDots,
+  anotherDots,
+  width,
+  height,
+  holes
+) => {
   const startTime = performance.now();
 
   try {
@@ -19,6 +25,7 @@ export const getPossibleMoves = async (myDots, anotherDots, width, height) => {
       anotherDots: convertCoordListToSend(anotherDots),
       width: width,
       height: height,
+      holes: convertCoordListToSend(holes),
     };
 
     const response = await axios.post(
@@ -58,7 +65,13 @@ export const getPossibleMoves = async (myDots, anotherDots, width, height) => {
   }
 };
 
-export const getBotMove = async (botDots, anotherDots, width, height) => {
+export const getBotMove = async (
+  botDots,
+  anotherDots,
+  width,
+  height,
+  holes
+) => {
   const startTime = performance.now();
 
   try {
@@ -67,6 +80,7 @@ export const getBotMove = async (botDots, anotherDots, width, height) => {
       anotherDots: convertCoordListToSend(anotherDots),
       width: width,
       height: height,
+      holes: convertCoordListToSend(holes),
     };
 
     const response = await axios.post(serverLink + "/bot_move", requestBody);

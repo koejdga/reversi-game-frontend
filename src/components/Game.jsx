@@ -24,7 +24,6 @@ export default function Game(props) {
   const [blackCircles, setBlackCircles] = useState(
     props.blackDots || defaultBlackDots
   );
-  const [holes, setHoles] = useState(props.blackDots || []);
   const [possibleMoves, setPossibleMoves] = useState(null);
 
   const [isWhiteTurn, setIsWhiteTurn] = useState(false);
@@ -53,7 +52,8 @@ export default function Game(props) {
           blackCircles,
           whiteCircles,
           props.width,
-          props.height
+          props.height,
+          props.holes
         );
 
         setPossibleMoves(result.possibleMoves);
@@ -63,7 +63,8 @@ export default function Game(props) {
           blackCircles,
           whiteCircles,
           props.width,
-          props.height
+          props.height,
+          props.holes
         );
 
         setBotMove(result.botMove);
@@ -125,7 +126,8 @@ export default function Game(props) {
         !isWhiteTurn ? white : black,
         !isWhiteTurn ? black : white,
         props.width,
-        props.height
+        props.height,
+        props.holes
       );
 
       setBotMove(result.botMove);
@@ -136,7 +138,8 @@ export default function Game(props) {
         !isWhiteTurn ? white : black,
         !isWhiteTurn ? black : white,
         props.width,
-        props.height
+        props.height,
+        props.holes
       );
 
       setBotMove(null);
