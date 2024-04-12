@@ -9,8 +9,6 @@ export default function Preparation(props) {
   const [width, setWidth] = useState(defaultWidth);
   const [height, setHeight] = useState(defaultHeight);
   const [holes, setHoles] = useState([]);
-  const [whiteCircles, setWhiteCircles] = useState([]);
-  const [blackCircles, setBlackCircles] = useState([]);
   const [amountOfHoles, setAmountOfHoles] = useState(1);
 
   const [firstPlayer, setFirstPlayer] = useState(Player.USER);
