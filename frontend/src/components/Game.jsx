@@ -121,7 +121,10 @@ export default function Game(props) {
     // isWhiteTurn represents the move that already happened, so !isWhiteTurn represents the next move that is about to happen
     let moves;
     let result;
-    if (state === Player.USER) {
+    if (
+      (isFirstPlayerTurn && props.secondPlayer === Player.BOT) ||
+      (!isFirstPlayerTurn && props.firstPlayer === Player.BOT)
+    ) {
       result = await getBotMove(
         !isWhiteTurn ? white : black,
         !isWhiteTurn ? black : white,
@@ -133,7 +136,10 @@ export default function Game(props) {
       setBotMove(result.botMove);
       moves = result.possibleMoves;
       setChanges(result.changes);
-    } else {
+    } else if (
+      (isFirstPlayerTurn && props.secondPlayer === Player.USER) ||
+      (!isFirstPlayerTurn && props.firstPlayer === Player.USER)
+    ) {
       result = await getPossibleMoves(
         !isWhiteTurn ? white : black,
         !isWhiteTurn ? black : white,

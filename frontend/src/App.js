@@ -5,7 +5,7 @@ import Game from "./components/Game";
 import { GameMode, defaultWidth, defaultHeight, Player } from "./common";
 
 function App() {
-  const [gameMode, setGameMode] = useState(GameMode.PLAYING);
+  const [gameMode, setGameMode] = useState(GameMode.CREATING);
   const [width, setWidth] = useState(defaultWidth);
   const [height, setHeight] = useState(defaultHeight);
   const [holes, setHoles] = useState([]);
